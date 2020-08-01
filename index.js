@@ -56,8 +56,6 @@ client.on("message", async msg => {
           }, 5000);
     }
 
-    console.log(value.toString())
-
     if (msg.content.startsWith(`${p}reddit`)) {
         console.log(value.toString())
         if (value != 1) {
@@ -314,7 +312,7 @@ client.on("message", async msg => {
 
         if (msg.mentions.users.first() != null && msg.mentions.users.first() != msg.author) {
 
-            if (msg.guild.member(msg.mentions.users.first()).kickable()) {
+            if (msg.guild.member(msg.mentions.users.first()).kickable) {
                 msg.guild.member(msg.mentions.users.first()).kick();
 
                 content = new Discord.MessageEmbed()
@@ -448,15 +446,25 @@ client.on("message", async msg => {
     if (msg.content.startsWith(`${p}ban`) && msg.member.hasPermission("BAN_MEMBERS")) {
 
         if (msg.mentions.users.first() != null && msg.mentions.users.first() != msg.author) {
-            msg.guild.member(msg.mentions.users.first()).ban();
+            if (msg.mentions.users.first().bannable) {
+                await msg.guild.member(msg.mentions.users.first()).ban();
 
-            content = new Discord.MessageEmbed()
-            .setAuthor(msg.author.username, msg.author.avatarURL())
-            .setTitle(`Action Successful`)
-            .setColor('#00FF00')
-            .setDescription(`Member ${msg.mentions.users.first()} has been banned.`);
+                content = new Discord.MessageEmbed()
+                .setAuthor(msg.author.username, msg.author.avatarURL())
+                .setTitle(`Action Successful`)
+                .setColor('#00FF00')
+                .setDescription(`Member ${msg.mentions.users.first()} has been banned.`);
+        
+                msg.channel.send(content);
+            } else {
+                content = new Discord.MessageEmbed()
+                .setAuthor(msg.author.username, msg.author.avatarURL())
+                .setTitle(`Action Failed`)
+                .setColor('#FF0000')
+                .setDescription(`I do not have permission to ban that user.`);
     
-            msg.channel.send(content);
+                msg.channel.send(content);
+            }
         } else {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -502,4 +510,4 @@ client.on("guildMemberRemove", (memb) => {
     memb.guild.channels.cache.get(`710973676803063822`).send(content);
 });
 
-client.login(process.env.token);
+client.login('NzM4NjM0MjI3OTQzNDczMTg0.XyOwuw.-2_s3rTCr0onjVhq6JAiMAu2p8s');
