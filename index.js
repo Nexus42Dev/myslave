@@ -1,4 +1,6 @@
 const Discord = require('discord.js');
+const superagent = require('superagent');
+
 p = '$';
 
 const client = new Discord.Client;
@@ -9,7 +11,9 @@ function random(high, low) {
     return Math.random() * (high - low) + low
 }
 
-client.on("message", (msg) => {
+let nMessage;
+
+client.on("message", async msg => {
     if (msg.author.bot) return;
     if (msg.guild == null) return;
 
@@ -32,8 +36,8 @@ client.on("message", (msg) => {
         .setColor('#111111')
         .setAuthor(msg.author.username, msg.author.avatarURL())
         .addField('General Commands', '`' + p + 'cmds` Show this list.\n`' + p + 'help` View Help.', false)
-        .addField('Fun Commands', '`' + p + '8ball` Returns the answer to your question.')
-
+        .addField('Fun Commands', '`' + p + '8ball` Returns the answer to your question.\n`' + p + 'meme` Returns a meme from r/memes.\n`' + p + 'reddit {REDDITNAME}` Returns a picture from your requested reddit.')
+        
         if (msg.member.hasPermission("KICK_MEMBERS") && msg.member.hasPermission("BAN_MEMBERS")) {
             content.addField('Moderator Commands', '`' + p + 'ban {USER}` Ban a member of the guild.\n`' + p + 'kick {USER}` Kick a member of the guild.\n`' + p + 'unban {USER}` Unban a member of the guild.\n`' + p + 'warn {USER} {REASON}` Warn a member of the guild.\n`' + p + 'warns` Shows the amount of warns currently stored in the database.', false);
         }
@@ -43,6 +47,108 @@ client.on("message", (msg) => {
         }
 
         msg.channel.send(content);
+    }
+
+    if (msg.content.startsWith(`${p}reddit`)) {
+        if (msg.content == `${p}reddit`) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`Please use like this: ` + '`' + p + 'reddit {REDDITNAME}`');
+    
+            msg.channel.send(content);
+
+            return;
+        }
+
+        content = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username, msg.author.avatarURL())
+        .setTitle('Awaiting your request...')
+        .setColor('#111111')
+        .setDescription('Please Be Patient!');
+
+        const mMessage = await msg.channel.send(content);
+
+        var sr = 'r/' + msg.content.split(' ').slice(1).toString();
+
+        try { 
+        var { body } = await superagent.get(
+  
+            "https://www.reddit.com/" + sr + "/random.json"
+    
+          );
+        } catch (error) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle('Unable to retrieve image')
+            .setColor('#FF0000')
+            .setDescription('Please ensure you are using correct syntax.\nIf a reddit doesn\'t exist it may produce this error, please ensure it does exist.');
+    
+            await mMessage.edit(content);
+
+            return;
+        }
+
+        if (body[0].data.children[0].data.over_18) {
+            if (!msg.channel.nsfw) {
+                content = new Discord.MessageEmbed()
+                .setAuthor(msg.author.username, msg.author.avatarURL())
+                .setTitle('Unable to retrieve image')
+                .setColor('#FF0000')
+                .setDescription('The image appears to be 18+.\nPlease enable nsfw in this channel.');
+        
+                await mMessage.edit(content);
+    
+                return;
+            }
+        }
+
+        try {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle('Image from `r/' + msg.content.split(' ').slice(1).toString() + '`')
+            .setColor('#111111')
+            .setImage(body[0].data.children[0].data.url_overridden_by_dest);
+    
+            mMessage.edit(content);
+        } catch (error) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle('Unable to retrieve image')
+            .setColor('#FF0000')
+            .setDescription('Please ensure you are using correct syntax.\nReddits such as `r/cats` may produce this error, try a different reddit.');
+    
+            await mMessage.edit(content);
+
+            return;
+        }
+    }
+
+    if (msg.content.startsWith(`${p}meme`)) {
+        content = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username, msg.author.avatarURL())
+        .setTitle('Awaiting your meme...')
+        .setColor('#111111')
+        .setDescription('Please Be Patient!');
+
+        const mMessage = await msg.channel.send(content);
+
+        var sr = "r/memes"
+
+        var { body } = await superagent.get(
+  
+          "https://www.reddit.com/" + sr + "/random.json"
+  
+        );
+
+        content = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username, msg.author.avatarURL())
+        .setTitle('Image from `r/memes`')
+        .setColor('#111111')
+        .setImage(body[0].data.children[0].data.url_overridden_by_dest);
+
+        mMessage.edit(content);
     }
 
     if (msg.content.startsWith('bruh') || msg.content.startsWith('bruj')) {
@@ -360,4 +466,4 @@ client.on("guildMemberRemove", (memb) => {
     memb.guild.channels.cache.get(`710973676803063822`).send(content);
 });
 
-client.login(process.env.token);
+client.login('NzM4NjM0MjI3OTQzNDczMTg0.XyOwuw.rNYrKY58BBXJzT3k6OousHYX4QI');
