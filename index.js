@@ -12,6 +12,7 @@ function random(high, low) {
 }
 
 let nMessage;
+var value = 0;
 
 client.on("message", async msg => {
     if (msg.author.bot) return;
@@ -49,7 +50,34 @@ client.on("message", async msg => {
         msg.channel.send(content);
     }
 
+    function time() {
+        setTimeout(function() {
+            value = 0;
+          }, 5000);
+    }
+
+    console.log(value.toString())
+
     if (msg.content.startsWith(`${p}reddit`)) {
+        console.log(value.toString())
+        if (value != 1) {
+            value = 1
+            console.log(value.toString())
+        } else {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`You're going to fast! Please wait a few seconds!!!`);
+    
+            await msg.channel.send(content);
+
+            time();
+            return;
+
+        }
+        console.log(value.toString())
+        
         if (msg.content == `${p}reddit`) {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -58,7 +86,7 @@ client.on("message", async msg => {
             .setDescription(`Please use like this: ` + '`' + p + 'reddit {REDDITNAME}`');
     
             msg.channel.send(content);
-
+            value = 0;
             return;
         }
 
@@ -87,6 +115,8 @@ client.on("message", async msg => {
     
             await mMessage.edit(content);
 
+            value = 0;
+
             return;
         }
 
@@ -99,6 +129,8 @@ client.on("message", async msg => {
                 .setDescription('The image appears to be 18+.\nPlease enable nsfw in this channel.');
         
                 await mMessage.edit(content);
+
+                value = 0;
     
                 return;
             }
@@ -112,6 +144,8 @@ client.on("message", async msg => {
             .setImage(body[0].data.children[0].data.url_overridden_by_dest);
     
             mMessage.edit(content);
+
+            value = 0;
         } catch (error) {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -120,6 +154,8 @@ client.on("message", async msg => {
             .setDescription('Please ensure you are using correct syntax.\nReddits such as `r/cats` may produce this error, try a different reddit.');
     
             await mMessage.edit(content);
+
+            value = 0;
 
             return;
         }
@@ -466,4 +502,4 @@ client.on("guildMemberRemove", (memb) => {
     memb.guild.channels.cache.get(`710973676803063822`).send(content);
 });
 
-client.login(process.env.token);
+client.login('NzM4NjM0MjI3OTQzNDczMTg0.XyOwuw.u20nb9GWExP9tiznOafq3SqCuM8');
