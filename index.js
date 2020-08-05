@@ -160,7 +160,7 @@ client.on("message", async msg => {
             return;
         }
 
-        msgCont = msg.content.split(' ').slice(1);
+        let msgCont = msg.content.split(' ').slice(1);
 
         if (isNaN(msgCont)) {
             content = new Discord.MessageEmbed()
