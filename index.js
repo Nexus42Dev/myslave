@@ -149,9 +149,7 @@ client.on("message", async msg => {
             return;
         }
 
-        let msgCont = msg.content.split(' ').slice(1).toString();
-
-        if (msgCont.length >= 2) {
+        if (msgCont >= 3) {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
             .setTitle(`Action Failed`)
