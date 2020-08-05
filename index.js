@@ -18,7 +18,7 @@ client.on("message", async msg => {
     if (msg.author.bot) return;
     if (msg.guild == null) return;
 
-    if (msg.content == p + 'help') {
+    if (msg.content.toLowerCase() == p + 'help') {
         content = new Discord.MessageEmbed()
         .setTitle('Wine Server')
         .setColor('#FF0000')
@@ -31,7 +31,7 @@ client.on("message", async msg => {
         msg.channel.send(content);
     }
 
-    if (msg.content == p + 'cmds') {
+    if (msg.content.toLowerCase() == p + 'cmds') {
         content = new Discord.MessageEmbed()
         .setTitle('Wine Commands')
         .setColor('#111111')
@@ -39,8 +39,12 @@ client.on("message", async msg => {
         .addField('General Commands', '`' + p + 'cmds` Show this list.\n`' + p + 'help` View Help.', false)
         .addField('Fun Commands', '`' + p + '8ball` Returns the answer to your question.\n`' + p + 'meme` Returns a meme from r/memes.\n`' + p + 'reddit {REDDITNAME}` Returns a picture from your requested reddit.')
         
+        if (msg.member.roles.cache.get('738223338387669064')) {
+            content.addField('Custom Wine Commands', '`' + p + 'wine {SPECIAL USER}` Gives them the special Wine Official role.', false);
+        }
+
         if (msg.member.hasPermission("KICK_MEMBERS") && msg.member.hasPermission("BAN_MEMBERS")) {
-            content.addField('Moderator Commands', '`' + p + 'ban {USER}` Ban a member of the guild.\n`' + p + 'kick {USER}` Kick a member of the guild.\n`' + p + 'unban {USER}` Unban a member of the guild.\n`' + p + 'warn {USER} {REASON}` Warn a member of the guild.\n`' + p + 'warns` Shows the amount of warns currently stored in the database.', false);
+            content.addField('Moderator Commands', '`' + p + 'ban {USER}` Ban a member of the guild.\n`' + p + 'kick {USER}` Kick a member of the guild.\n`' + p + 'purge {AMOUNT}` Deletes the preferred amount of messages.\n`' + p + 'unban {USER}` Unban a member of the guild.\n`' + p + 'warn {USER} {REASON}` Warn a member of the guild.\n`' + p + 'warns` Shows the amount of warns currently stored in the database.', false);
         }
 
         if (msg.member.hasPermission("ADMINISTRATOR")) {
@@ -56,7 +60,135 @@ client.on("message", async msg => {
           }, 5000);
     }
 
-    if (msg.content.startsWith(`${p}reddit`)) {
+    if (msg.content.toLowerCase().startsWith(`${p}wine`)) {
+        if (!msg.member.roles.cache.get('738223338387669064')) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`You do not have the correct permissions.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.content == `${p}wine`) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription('Please identify a user of this guild.');
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.mentions.users.first() == null) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription('Please identify a user of this guild.');
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.mentions.users.first() == msg.author) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`Please identify a user of this guild that isn't you.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        try {
+            await msg.guild.member(msg.mentions.users.first()).roles.add('734612827289157753');
+
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Successful`)
+            .setColor('#00FF00')
+            .setDescription(`${msg.mentions.users.first().username} is now a Wine Official user.`);
+    
+            await msg.channel.send(content);
+        } catch (error) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`The action was unable to be completed due to an unforseen error:\n\n` + '```\n' + error + '\n```');
+    
+            await msg.channel.send(content);
+        }
+    }
+
+    if (msg.content.toLowerCase().startsWith(`${p}purge`)) {
+        if (!msg.member.hasPermission("MANAGE_MESSAGES")) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`You do not have the correct permissions.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.content == `${p}purge`) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription('Please identify an amount.\n`Up to 100 messages`');
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        let msgCont = msg.content.split(' ').slice(1).toString();
+
+        if (msgCont.length >= 2) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription('Please identify an amount.\n`Up to 100 messages`');
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        msgCont = msg.content.split(' ').slice(1);
+
+        if (isNaN(msgCont)) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription('Please ensure the provided arguments are a number!');
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        await msg.channel.messages.fetch({ limit: msgCont }).then(messages => {
+            msg.channel.bulkDelete(messages);
+        });
+
+        content = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username, msg.author.avatarURL())
+        .setTitle(`Action Successful`)
+        .setColor('#00FF00')
+        .setDescription('`' + msgCont + '` Messages have been deleted.');
+
+        await msg.channel.send(content);
+    }
+
+    if (msg.content.toLowerCase().startsWith(`${p}reddit`)) {
         console.log(value.toString())
         if (value != 1) {
             value = 1
@@ -159,7 +291,7 @@ client.on("message", async msg => {
         }
     }
 
-    if (msg.content.startsWith(`${p}meme`)) {
+    if (msg.content.toLowerCase().startsWith(`${p}meme`)) {
         content = new Discord.MessageEmbed()
         .setAuthor(msg.author.username, msg.author.avatarURL())
         .setTitle('Awaiting your meme...')
@@ -168,7 +300,7 @@ client.on("message", async msg => {
 
         const mMessage = await msg.channel.send(content);
 
-        var sr = "r/memes"
+        var sr = "r/dankmemes"
 
         var { body } = await superagent.get(
   
@@ -185,17 +317,17 @@ client.on("message", async msg => {
         mMessage.edit(content);
     }
 
-    if (msg.content.startsWith('bruh') || msg.content.startsWith('bruj')) {
+    if (msg.content.toLowerCase().startsWith('bruh') || msg.content.toLowerCase().startsWith('bruj')) {
         msg.channel.send('**bruh**');
     }
     
-    if (msg.content.startsWith('no u') || msg.content.startsWith('nou')) {
+    if (msg.content.toLowerCase().startsWith('no u') || msg.content.toLowerCase().startsWith('nou')) {
         msg.channel.send('**no u** >:)');
     }
 
     args = msg.content.split(' ').slice(1).toString();
 
-    if (msg.content.startsWith(`${p}prefix`) && msg.member.hasPermission("ADMINISTRATOR") && msg.content != `${p}prefix` && args.length <= 2) {
+    if (msg.content.toLowerCase().startsWith(`${p}prefix`) && msg.member.hasPermission("ADMINISTRATOR") && msg.content != `${p}prefix` && args.length <= 2) {
         p = msg.content.split(' ').slice(1);
  
         content = new Discord.MessageEmbed()
@@ -204,7 +336,7 @@ client.on("message", async msg => {
         .setColor('#00FF00')
         .setDescription(`Prefix has been changed to ${p}`);
 
-        msg.channel.send(content);
+        await msg.channel.send(content);
     } else if (msg.member.hasPermission("ADMINISTRATOR") && msg.content == `${p}prefix`) {
         content = new Discord.MessageEmbed()
         .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -213,7 +345,7 @@ client.on("message", async msg => {
         .setDescription(`Please enter a valid prefix.`);
 
         msg.channel.send(content);
-    } else if (msg.member.hasPermission("ADMINISTRATOR") && msg.content.startsWith(`${p}prefix`) && args.length >= 2) {
+    } else if (msg.member.hasPermission("ADMINISTRATOR") && msg.content.toLowerCase().startsWith(`${p}prefix`) && args.length >= 2) {
         content = new Discord.MessageEmbed()
         .setAuthor(msg.author.username, msg.author.avatarURL())
         .setTitle(`Action Failed`)
@@ -221,7 +353,7 @@ client.on("message", async msg => {
         .setDescription(`Words not supported for now.`);
 
         msg.channel.send(content);
-    } else if (!msg.member.hasPermission("ADMINISTRATOR") && msg.content.startsWith(`${p}prefix`)) {
+    } else if (!msg.member.hasPermission("ADMINISTRATOR") && msg.content.toLowerCase().startsWith(`${p}prefix`)) {
         content = new Discord.MessageEmbed()
         .setAuthor(msg.author.username, msg.author.avatarURL())
         .setTitle(`Action Failed`)
@@ -231,7 +363,7 @@ client.on("message", async msg => {
         msg.channel.send(content);
     }
 
-    if (msg.content.startsWith(`${p}8ball`)) {
+    if (msg.content.toLowerCase().startsWith(`${p}8ball`)) {
         if (msg.content == `${p}8ball`) {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -274,7 +406,7 @@ client.on("message", async msg => {
         msg.channel.send(content);
     }
 
-    if (msg.content.startsWith(`${p}unban`) && msg.member.hasPermission("BAN_MEMBERS")) {
+    if (msg.content.toLowerCase().startsWith(`${p}unban`) && msg.member.hasPermission("BAN_MEMBERS")) {
         if (msg.content == `${p}unban`) {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -297,7 +429,7 @@ client.on("message", async msg => {
 
         msg.channel.send(content);
     } else if (!msg.member.hasPermission('BAN_MEMBERS')) {
-        if (!msg.content.startsWith(`${p}unban`)) return;
+        if (!msg.content.toLowerCase().startsWith(`${p}unban`)) return;
 
         content = new Discord.MessageEmbed()
         .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -308,7 +440,7 @@ client.on("message", async msg => {
         msg.channel.send(content);
     }
 
-    if (msg.content.startsWith(`${p}kick`) && msg.member.hasPermission("KICK_MEMBERS")) {
+    if (msg.content.toLowerCase().startsWith(`${p}kick`) && msg.member.hasPermission("KICK_MEMBERS")) {
 
         if (msg.mentions.users.first() != null && msg.mentions.users.first() != msg.author) {
 
@@ -341,7 +473,7 @@ client.on("message", async msg => {
             msg.channel.send(content);
         }
     } else if (!msg.member.hasPermission('KICK_MEMBERS')) {
-        if (!msg.content.startsWith(`${p}kick`)) return;    
+        if (!msg.content.toLowerCase().startsWith(`${p}kick`)) return;    
 
         content = new Discord.MessageEmbed()
         .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -374,7 +506,7 @@ client.on("message", async msg => {
     var userperson = msg.mentions.users.first();
     reasoner = args.slice(1).join(' ');
 
-    if (msg.content.startsWith(`${p}warn`) && msg.content != `${p}warns`) {
+    if (msg.content.toLowerCase().startsWith(`${p}warn`) && msg.content != `${p}warns`) {
         if (!userperson) {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -443,10 +575,10 @@ client.on("message", async msg => {
         msg.channel.send(content);
     }
 
-    if (msg.content.startsWith(`${p}ban`) && msg.member.hasPermission("BAN_MEMBERS")) {
+    if (msg.content.toLowerCase().startsWith(`${p}ban`) && msg.member.hasPermission("BAN_MEMBERS")) {
 
         if (msg.mentions.users.first() != null && msg.mentions.users.first() != msg.author) {
-            if (msg.mentions.users.first().bannable) {
+            if (msg.guild.member(msg.mentions.users.first()).bannable) {
                 await msg.guild.member(msg.mentions.users.first()).ban();
 
                 content = new Discord.MessageEmbed()
@@ -475,7 +607,7 @@ client.on("message", async msg => {
             msg.channel.send(content);
         }
     } else if (!msg.member.hasPermission('BAN_MEMBERS')) {
-        if (!msg.content.startsWith(`${p}ban`)) return;    
+        if (!msg.content.toLowerCase().startsWith(`${p}ban`)) return;    
 
         content = new Discord.MessageEmbed()
         .setAuthor(msg.author.username, msg.author.avatarURL())
