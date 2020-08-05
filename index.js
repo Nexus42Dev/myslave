@@ -149,6 +149,8 @@ client.on("message", async msg => {
             return;
         }
 
+        let msgCont = msg.content.split(' ').slice(1);
+
         if (msgCont >= 3) {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
@@ -159,8 +161,6 @@ client.on("message", async msg => {
             await msg.channel.send(content);
             return;
         }
-
-        let msgCont = msg.content.split(' ').slice(1);
 
         if (isNaN(msgCont)) {
             content = new Discord.MessageEmbed()
