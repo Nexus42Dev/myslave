@@ -151,7 +151,7 @@ client.on("message", async msg => {
 
         let msgCont = msg.content.split(' ').slice(1);
 
-        if (msgCont >= 3) {
+        if (msgCont.toString().length >= 3 && msg.content.toString() != '100') {
             content = new Discord.MessageEmbed()
             .setAuthor(msg.author.username, msg.author.avatarURL())
             .setTitle(`Action Failed`)
@@ -640,4 +640,4 @@ client.on("guildMemberRemove", (memb) => {
     memb.guild.channels.cache.get(`710973676803063822`).send(content);
 });
 
-client.login(process.env.token);
+client.login('NzM4NjM0MjI3OTQzNDczMTg0.XyOwuw.bGY_wQauPF3KzZeEL3NfsC4pR3Q');
