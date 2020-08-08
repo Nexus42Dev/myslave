@@ -18,7 +18,39 @@ client.on("message", async msg => {
     if (msg.author.bot) return;
     if (msg.guild == null) return;
 
-    if (msg.content.toLowerCase() == p + 'help') {
+    if (msg.member.roles.cache.get('741415699171246212')) {
+        if (msg.mentions.users.first() != null || msg.mentions.roles.first() != null || msg.content.includes('@here') || msg.content.includes('@everyone')) {
+            if (msg.member.kickable) {
+                if (msg.deletable) {
+                    await msg.delete();
+                }
+
+                await msg.member.kick();
+
+                content = new Discord.MessageEmbed()
+                .setAuthor(msg.author.username, msg.author.avatarURL())
+                .setTitle(`Action Successful`)
+                .setColor('#00FF00')
+                .setDescription(`${msg.mentions.users.first().username} has been automatically kicked for possible mass ping.`);
+        
+                await msg.channel.send(content);
+                return;
+            }
+        }
+        if (msg.deletable) {
+            msg.delete();
+        }
+
+        try {
+            msg.channel.type === (`"dm"`) + msg.author.send('You are currently muted on Wine Official! You are not allowed to speak there!')
+        } catch (error) {
+
+        }
+    }
+
+    if (msg.member.roles.cache.get('741415699171246212')) return;
+
+    if (msg.content.toLowerCase() == p + 'help' && !msg.member.roles.cache.get('741415699171246212')) {
         content = new Discord.MessageEmbed()
         .setTitle('Wine Server')
         .setColor('#FF0000')
@@ -31,7 +63,7 @@ client.on("message", async msg => {
         msg.channel.send(content);
     }
 
-    if (msg.content.toLowerCase() == p + 'cmds') {
+    if (msg.content.toLowerCase() == p + 'cmds' && !msg.member.roles.cache.get('741415699171246212')) {
         content = new Discord.MessageEmbed()
         .setTitle('Wine Commands')
         .setColor('#111111')
@@ -44,7 +76,7 @@ client.on("message", async msg => {
         }
 
         if (msg.member.hasPermission("KICK_MEMBERS") && msg.member.hasPermission("BAN_MEMBERS")) {
-            content.addField('Moderator Commands', '`' + p + 'ban {USER}` Ban a member of the guild.\n`' + p + 'kick {USER}` Kick a member of the guild.\n`' + p + 'purge {AMOUNT}` Deletes the preferred amount of messages.\n`' + p + 'unban {USER}` Unban a member of the guild.\n`' + p + 'warn {USER} {REASON}` Warn a member of the guild.\n`' + p + 'warns` Shows the amount of warns currently stored in the database.', false);
+            content.addField('Moderator Commands', '`' + p + 'ban {USER}` Ban a member of the guild.\n`' + p + 'kick {USER}` Kick a member of the guild.\n`' + p + 'purge {AMOUNT}` Deletes the preferred amount of messages.\n`' + p + 'unban {USER}` Unban a member of the guild.\n`' + p + 'warn {USER} {REASON}` Warn a member of the guild.\n`' + p + 'warns` Shows the amount of warns currently stored in the database.\n`' + p + 'mute {USER}` Mutes the specified user.\n`' + p + 'unmute {USER}` Unmutes the specified user.', false);
         }
 
         if (msg.member.hasPermission("ADMINISTRATOR")) {
@@ -53,6 +85,124 @@ client.on("message", async msg => {
 
         msg.channel.send(content);
     }
+
+    if (msg.content.toLowerCase().startsWith(`${p}unmute`)) {
+        if (!msg.member.hasPermission('MANAGE_ROLES')) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`You do not have the correct permissions.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.mentions.users.first() == null) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`Please provide a valid member of the guild.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.mentions.users.first() == msg.author) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`Please provide a valid member of the guild.\nYou can not unmute yourself.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        //mute
+        if (msg.guild.member(msg.mentions.users.first()).roles.cache.get('741415699171246212')) {
+
+            await msg.guild.member(msg.mentions.users.first()).roles.remove('741415699171246212');
+
+            try {
+                msg.channel.type === (`"dm"`) + msg.mentions.users.first().send('You are no longer muted on the Wine Official server.')
+            } catch (error) {
+    
+            }
+            
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Successful`)
+            .setColor('#00FF00')
+            .setDescription(`${msg.mentions.users.first().username} has been unmuted.`);
+    
+            await msg.channel.send(content);
+        } else {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`That user isn't muted.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+    }
+
+    if (msg.content.toLowerCase().startsWith(`${p}mute`)) {
+        if (!msg.member.hasPermission('MANAGE_ROLES')) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`You do not have the correct permissions.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.mentions.users.first() == null) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`Please provide a valid member of the guild.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        if (msg.mentions.users.first() == msg.author) {
+            content = new Discord.MessageEmbed()
+            .setAuthor(msg.author.username, msg.author.avatarURL())
+            .setTitle(`Action Failed`)
+            .setColor('#FF0000')
+            .setDescription(`Please provide a valid member of the guild.\nYou can not mute yourself.`);
+    
+            await msg.channel.send(content);
+            return;
+        }
+
+        //mute
+        await msg.guild.member(msg.mentions.users.first()).roles.add('741415699171246212');
+
+        try {
+            msg.channel.type === (`"dm"`) + msg.mentions.users.first().send('You are now muted on the Wine Official server.\nIf you ping anyone while muted you will be instantly removed from the server.')
+        } catch (error) {
+
+        }
+
+        content = new Discord.MessageEmbed()
+        .setAuthor(msg.author.username, msg.author.avatarURL())
+        .setTitle(`Action Successful`)
+        .setColor('#00FF00')
+        .setDescription(`${msg.mentions.users.first().username} has been muted.`);
+
+        await msg.channel.send(content);
+    }
+
+
 
     function time() {
         setTimeout(function() {
@@ -626,7 +776,7 @@ client.on("guildMemberAdd", (memb) => {
     .setDescription(`Thank you for joining the Official Wine Server!`)
     .addField('Need Help?', `use ${p}help for info!`);
 
-    memb.guild.channels.cache.get(`710973676803063822`).send(content);
+    memb.guild.channels.cache.get(`741426836822818987`).send(content);
 });
 
 client.on("guildMemberRemove", (memb) => {
@@ -637,7 +787,7 @@ client.on("guildMemberRemove", (memb) => {
     .setColor('#111111')
     .setDescription(`We are sorry to see you go.`);
 
-    memb.guild.channels.cache.get(`710973676803063822`).send(content);
+    memb.guild.channels.cache.get(`741426836822818987`).send(content);
 });
 
-client.login(process.env.token);
+client.login('NzM4NjM0MjI3OTQzNDczMTg0.XyOwuw.bM_V_4BXuqDXKmtRvIQgvl1exrU');
