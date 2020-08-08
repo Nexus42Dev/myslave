@@ -790,4 +790,4 @@ client.on("guildMemberRemove", (memb) => {
     memb.guild.channels.cache.get(`741426836822818987`).send(content);
 });
 
-client.login('NzM4NjM0MjI3OTQzNDczMTg0.XyOwuw.bM_V_4BXuqDXKmtRvIQgvl1exrU');
+client.login(process.env.token);
