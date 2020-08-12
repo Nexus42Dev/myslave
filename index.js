@@ -776,7 +776,7 @@ client.on("guildMemberAdd", (memb) => {
     .setDescription(`Thank you for joining the Official Wine Server!`)
     .addField('Need Help?', `use ${p}help for info!`);
 
-    memb.guild.channels.cache.get(`741426836822818987`).send(content);
+    memb.guild.channels.cache.get(`743008376111497226`).send(content);
 });
 
 client.on("guildMemberRemove", (memb) => {
@@ -787,7 +787,7 @@ client.on("guildMemberRemove", (memb) => {
     .setColor('#111111')
     .setDescription(`We are sorry to see you go.`);
 
-    memb.guild.channels.cache.get(`741426836822818987`).send(content);
+    memb.guild.channels.cache.get(`743008376111497226`).send(content);
 });
 
 client.login(process.env.token);
