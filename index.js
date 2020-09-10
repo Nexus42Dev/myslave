@@ -973,7 +973,7 @@ client.on("ready", () => {
         if (m.nickname == null) {
             m.nickname = `〔${kewl}〕| ${m.user.username}`;
             console.log(`Fixed: ${m.user.username} -> ${m.nickname}`);
-        } else if (!m.nickname.startsWith('|')) {
+        } else if (!m.nickname.startsWith('〔')) {
             m.nickname = `〔${kewl}〕| ${m.user.username}`;
             console.log(`Fixed: ${m.user.username} -> ${m.nickname}`);
         }
