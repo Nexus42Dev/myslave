@@ -946,10 +946,10 @@ client.on("guildMemberAdd", (memb) => {
 
     memb.guild.channels.cache.get(wChannel).send(content);
 
-    let kewl = m.user.username.charAt(1).toUpperCase();
+    let kewl = m.user.username.charAt(0).toUpperCase();
 
     memb.roles.add('747341269306572922');
-    memb.nickname = `${kewl} | ${memb.user.username}`;
+    memb.nickname = `〔${kewl}〕 | ${memb.user.username}`;
 });
 
 client.on("guildMemberRemove", (memb) => {
@@ -968,13 +968,13 @@ client.on("ready", () => {
     snipeAuthor = client.guilds.cache.first().members.cache.get('708504312862474282').user;
 
     client.guilds.cache.get('747208922502397952').members.cache.forEach((m) => {
-        let kewl = m.user.username.charAt(1).toUpperCase();
+        let kewl = m.user.username.charAt(0).toUpperCase();
 
         if (m.nickname == null) {
-            m.nickname = `| ${m.user.username}`;
+            m.nickname = `〔${kewl}〕| ${m.user.username}`;
             console.log(`Fixed: ${m.user.username} -> ${m.nickname}`);
         } else if (!m.nickname.startsWith('|')) {
-            m.nickname = `${kewl} | ${m.user.username}`;
+            m.nickname = `〔${kewl}〕| ${m.user.username}`;
             console.log(`Fixed: ${m.user.username} -> ${m.nickname}`);
         }
     });
